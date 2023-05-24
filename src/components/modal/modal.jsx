@@ -1,44 +1,34 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import css from 'components/modal/modal.module.css';
 
-export class Modal extends Component {
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleClickEscape);
-  }
+export const Modal = ({ url: { largeImageURL, tags }, onClick }) => {
+  useEffect(() => {
+    const handleClickEscape = e => {
+      if (e.code === 'Escape') onClick();
+    };
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleClickEscape);
-  }
+    document.addEventListener('keydown', handleClickEscape);
+    return () => {
+      document.removeEventListener('keydown', handleClickEscape);
+    };
+  }, [onClick]);
 
-  handleClickEscape = e => {
-    if (e.code === 'Escape') {
-      this.props.onClick();
+  const handleOverlay = e => {
+    if (e.target === e.currentTarget) {
+      onClick();
     }
   };
 
-  render() {
-    const {
-      url: { largeImageURL, tags },
-      onClick,
-    } = this.props;
-
-    const handleOverlay = e => {
-      if (e.target === e.currentTarget) {
-        onClick();
-      }
-    };
-
-    return (
-      <div className={css.overlay} onClick={handleOverlay}>
-        <div className={css.modal}>
-          <img src={largeImageURL} alt={tags} />
-        </div>
+  return (
+    <div className={css.overlay} onClick={handleOverlay}>
+      <div className={css.modal}>
+        <img src={largeImageURL} alt={tags} />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 Modal.propTypes = {
   url: PropTypes.shape({
@@ -47,3 +37,40 @@ Modal.propTypes = {
   }).isRequired,
   onClick: PropTypes.func.isRequired,
 };
+
+// export class Modal extends Component {
+//   componentDidMount() {
+//     document.addEventListener('keydown', this.handleClickEscape);
+//   }
+
+//   componentWillUnmount() {
+//     document.removeEventListener('keydown', this.handleClickEscape);
+//   }
+
+//   handleClickEscape = e => {
+//     if (e.code === 'Escape') {
+//       this.props.onClick();
+//     }
+//   };
+
+//   render() {
+//     const {
+//       url: { largeImageURL, tags },
+//       onClick,
+//     } = this.props;
+
+//     const handleOverlay = e => {
+//       if (e.target === e.currentTarget) {
+//         onClick();
+//       }
+//     };
+
+//     return (
+//       <div className={css.overlay} onClick={handleOverlay}>
+//         <div className={css.modal}>
+//           <img src={largeImageURL} alt={tags} />
+//         </div>
+//       </div>
+//     );
+//   }
+// }
